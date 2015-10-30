@@ -54,7 +54,12 @@ func Serve(urlPrefix string, fs ServeFileSystem) gin.HandlerFunc {
 		fileserver = http.StripPrefix(urlPrefix, fileserver)
 	}
 	return func(c *gin.Context) {
-		if fs.Exists(urlPrefix, c.Request.URL.Path) {
+		path := c.Request.URL.Path
+		if path == "/" || path == "" {
+			path = "/index.html"
+		}
+
+		if fs.Exists(urlPrefix, path) {
 			fileserver.ServeHTTP(c.Writer, c.Request)
 			c.Abort()
 		}
